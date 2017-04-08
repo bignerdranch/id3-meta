@@ -1,0 +1,39 @@
+{
+  "name": "id3-meta",
+  "version": "1.0.0",
+  "description": "A metadata parser for ID3v2 formatted MP3s.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bignerdranch/id3-meta.git"
+  },
+  "keywords": [
+    "javascript",
+    "id3",
+    "mp3",
+    "music",
+    "parser",
+    "arraybuffer",
+    "typedarrays",
+    "dataview",
+    "textencoder",
+    "reader"
+  ],
+  "author": "Jonathan Martin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bignerdranch/id3-meta/issues"
+  },
+  "homepage": "https://github.com/bignerdranch/id3-meta#readme",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-es2016": "^6.24.1",
+    "babel-preset-es2017": "^6.24.1",
+    "rollup": "^0.41.6",
+    "rollup-plugin-babel": "^2.7.1"
+  }
+}
