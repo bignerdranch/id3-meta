@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.id3Meta = global.id3Meta || {})));
-}(this, (function (exports) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('underscore.string')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'underscore.string'], factory) :
+	(factory((global.id3Meta = global.id3Meta || {}),global.underscore_string));
+}(this, (function (exports,underscore_string) { 'use strict';
 
 var Cursor = ((buffer, offset) => {
   let consume = size => {
@@ -19,6 +19,55 @@ var Cursor = ((buffer, offset) => {
     skip, buffer, offset: () => offset
   });
 });
+
+let pipe = (fx, fy) => (...args) => fy(fx(...args));
+
+let present = s => !underscore_string.isBlank(s);
+let yes = () => true;
+
+let key = name => obj => obj[name];
+let text = key('text');
+
+const ALBUM_FIELDS = {
+  title: ['TALB', text, present],
+  artist: ['TPE1', text, present],
+  performers: ['TPE2', text, present],
+  conductor: ['TPE3', text, present],
+  genre: ['TCON', text, present],
+  composer: ['TCOM', text, present],
+  year: ['TYER', text, present],
+  songCount: ['TRCK', pipe(text, s => parseInt(underscore_string.strRight(s, '/'), 10)), present],
+  artwork: ['APIC', key('blob'), yes]
+};
+
+const SONG_FIELDS = {
+  albumTitle: ['TALB', text, present],
+  title: ['TIT2', text, present],
+  artist: ['TPE1', text, present],
+  performers: ['TPE2', text, present],
+  conductor: ['TPE3', text, present],
+  composer: ['TCOM', text, present],
+  track: ['TRCK', pipe(text, s => parseInt(underscore_string.strLeft(s, '/'), 10)), present]
+};
+
+let extract = (meta, fields) => Object.keys(fields).reduce((memo, field) => {
+  let [id3, extract, test] = fields[field];
+  if (meta.hasOwnProperty(id3)) {
+    let value = extract(meta[id3]);
+    if (test(value)) {
+      memo[field] = value;
+    }
+  }
+  return memo;
+}, {});
+
+let mapSongMeta = meta => {
+  return extract(meta, SONG_FIELDS);
+};
+
+let mapAlbumMeta = meta => {
+  return extract(meta, ALBUM_FIELDS);
+};
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -148,6 +197,8 @@ var index = (buffer => {
 });
 
 exports['default'] = index;
+exports.mapSongMeta = mapSongMeta;
+exports.mapAlbumMeta = mapAlbumMeta;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

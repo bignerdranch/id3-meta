@@ -1,4 +1,5 @@
 import Cursor from './cursor';
+export { mapSongMeta, mapAlbumMeta } from './map';
 
 let decode = (format, string) => new TextDecoder(format).decode(string);
 
